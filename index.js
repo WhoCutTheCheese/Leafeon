@@ -50,7 +50,7 @@ mongoose.connection.on('err', err => {
 mongoose.connection.on('disconnected', () => {
     console.warn('Mongoose connection lost');
 });
-client.on('message', async message => {
+client.on('messageCreate', async message => {
     if (!message.content.startsWith(prefix)) return;
     let args = message.content.substring(prefix.length).split(" ");
     switch (args[0]) {
