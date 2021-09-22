@@ -16,7 +16,7 @@ module.exports = {
                 .setDescription("Change the prefix for your server.")
                 .addField("Current Prefix:", `\`${settings.prefix}\``)
                 .addField("Change Prefix:", `\`${settings.prefix}prefix <New Prefix/Reset>\``)
-                .setTimestamp()
+                .setTimestamp(`${message.author.avatarURL()}`)
             return message.channel.send({ embeds: [noPrefix] })
         };
 
@@ -27,12 +27,12 @@ module.exports = {
             const resetPrefix = new MessageEmbed()
                 .setTitle("Prefix")
                 .setColor("RED")
-                .setDescription(":white_check_mark: Prefix has been reset, prefix is now `!!`")
+                .setDescription("<a:bongo:890307897312051221> Prefix has been reset, prefix is now `!!`")
             message.channel.send({ embeds: [resetPrefix] })
         } else {
             if (args[1].length > 3) {
                 const tooLong = new MessageEmbed()
-                    .setDescription(":x: This prefix is too long, please choose another.")
+                    .setDescription("<a:bongo:890307897312051221> This prefix is too long, please choose another.")
                     .setColor("RED")
                 return message.channel.send({ embeds: [tooLong] })
             } else {
@@ -42,7 +42,7 @@ module.exports = {
                 const setPrefix = new MessageEmbed()
                     .setTitle("Prefix")
                     .setColor(`GREEN`)
-                    .addField("Prefix Updated", `Your guild's prefix has been updated to \`${args[1]}\``)
+                    .addField("Prefix Updated", `<a:bongo:890307897312051221> Your guild's prefix has been updated to \`${args[1]}\``)
                     .setTimestamp()
                 return message.channel.send({ embeds: [setPrefix] });
             }

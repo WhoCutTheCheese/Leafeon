@@ -25,8 +25,8 @@ module.exports = {
             if (settings.tokens === 1) {
                 const premiumEnabled = new Discord.MessageEmbed()
                     .setTitle("Premium")
-                    .setColor(guildSettings.color)
-                    .setDescription(`<a:online:831898654432165888> Premium has been enabled for **${message.guild.name}**`)
+                    .setColor("GOLD")
+                    .setDescription(`<a:bongo:890307897312051221> Premium has been enabled for **${message.guild.name}**`)
                     .setFooter(`${message.author.tag} - ${message.guild.name}`)
                 message.channel.send({ embeds: [premiumEnabled]})
                 console.log(`Premium has been enabled for ${message.guild.name} (${message.guild.id}). If this was unauthorized please revoke it forcefully.`)
@@ -43,13 +43,13 @@ module.exports = {
             }
 
         } else if (args[1] === "revoke") {
-            if (!settings) return message.channel.send({ content: "This server does not have premium enabled." })
+            if (!settings) return message.channel.send({ content: "This server does not have premium enabled. Or you were not the one who enabled premium." })
             if (settings.userID !== message.author.id) return message.channel.send({ content: "You do not have premium enabled on this server. Or you were not the one to enable premium on this server." })
             if (settings.guildID === message.guild.id) {
                 const disabledPremium = new Discord.MessageEmbed()
                     .setTitle("Premium")
-                    .setColor("ff5959")
-                    .setDescription(`<a:down:831900256827605043> Premium was disabled on **${message.guild.name}** and \`1\` premium token has been added to your balence`)
+                    .setColor("RED")
+                    .setDescription(`<a:bongo:890307897312051221> Premium was disabled on **${message.guild.name}** and \`1\` premium token has been added to your balence`)
                     .setFooter(`${message.author.tag} - ${message.guild.name}`)
                 message.channel.send({ embeds: [disabledPremium] })
                 console.log(`Premium was disabled on ${message.guild.name} (${message.guild.id}) by ${message.author.tag}`)
@@ -69,12 +69,12 @@ module.exports = {
                 })
 
             } else {
-                message.channel.send({ content: "This server does not have premium enabled."})
+                message.channel.send({ content: "This server does not have premium enabled. Or you were not the one who enabled premium!"})
             }
         } else if (!args[1]) {
             const premium = new Discord.MessageEmbed()
                 .setTitle("Premium")
-                .setColor(guildSettings.color)
+                .setColor("GOLD")
                 .setDescription("Enable/Check/Revoke premium.")
                 .addField("Premium Sub Commands", `\`${guildSettings.prefix}premium [Redeem/Revoke/Check]\``)
                 .setFooter(`${message.author.tag} - ${message.guild.name}`)
@@ -82,21 +82,21 @@ module.exports = {
         } else if (args[1] === "check") {
             const yesTokens = new Discord.MessageEmbed()
                 .setTitle("Premium")
-                .setColor(guildSettings.color)
+                .setColor("GOLD")
                 .setDescription("View your current premium status.")
                 .addField("Tokens:", "`1`", true)
                 .addField("Premium Status:", "`DISABLED`", true)
                 .setFooter(`${message.author.tag} - ${message.guild.name}`)
             const yesPremium = new Discord.MessageEmbed()
                 .setTitle("Premium")
-                .setColor(guildSettings.color)
+                .setColor("GOLD")
                 .setDescription("View your current premium status.")
                 .addField("Tokens:", "`0`", true)
                 .addField("Premium Status:", "`ENABLED`", true)
                 .setFooter(`${message.author.tag} - ${message.guild.name}`)
             const noTokens = new Discord.MessageEmbed()
                 .setTitle("Premium")
-                .setColor(guildSettings.color)
+                .setColor("RED")
                 .setDescription("View your current premium status.")
                 .addField("Tokens:", "`0`", true)
                 .addField("Premium Status:", "`DISABLED`", true)
@@ -107,7 +107,7 @@ module.exports = {
             if (cPrem) {
                 const otherServer = new Discord.MessageEmbed()
                     .setTitle("Premium")
-                    .setColor(guildSettings.color)
+                    .setColor("GOLD")
                     .setDescription("View your current premium status.")
                     .addField("Tokens:", "`0`", true)
                     .addField("Guild Premium Status:", "`ENABLED`", true)
@@ -117,7 +117,7 @@ module.exports = {
             } else {
                 const otherServer = new Discord.MessageEmbed()
                     .setTitle("Premium")
-                    .setColor(guildSettings.color)
+                    .setColor("RED")
                     .setDescription("View your current premium status.")
                     .addField("Tokens:", "`0`", true)
                     .addField("Guild Premium Status:", "`DISABLED`", true)

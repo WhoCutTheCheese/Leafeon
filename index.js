@@ -100,6 +100,17 @@ client.on('messageCreate', async message => {
         case "prefix":
             client.commands.get('prefix').run(client, message, args);
             break
+        case "color":
+        case "setcolor":
+        case "c":
+            client.commands.get('color').run(client, message, args);
+            break
+        case "givepremium":
+            client.commands.get('givepremium').run(client, message, args);
+            break
+        case "premium":
+            client.commands.get('premium').run(client, message, args);
+            break
     }
 })
 client.mongoose.init();

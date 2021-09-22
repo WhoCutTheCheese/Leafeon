@@ -1,4 +1,4 @@
-const { MessageEmbed, Permissions } = require('discord.js');
+const { MessageEmbed, Permissions, DiscordAPIError } = require('discord.js');
 const Guild = require('../models/guild');
 const Tokens = require('../models/tokens');
 module.exports = {
@@ -13,13 +13,20 @@ module.exports = {
             guildID: message.guild.id
         });
         if (!gSettings) return;
-        if (!tSettings) return message.channel.send({ content: "Premium is required to use this command." });
+        const premiumReq = new MessageEmbed()
+            .setTitle("Color")
+            .setColor("GOLD")
+            .setDescription("Set the embed color for your guild.")
+            .addField("Color Sub Commands:", "`color [reset/hex]`")
+            .addField("Aliases:", "`c, setcolor`")
+            .setFooter("THIS IS A PREMIUM COMMAND", `${message.author.avatarURL()}`)
+        if (!tSettings) return message.channel.send({ embeds: [premiumReq] });
         if(tSettings.guildID === message.guild.id) {
             if(args[1] === 'reset') {
                 const reset = new MessageEmbed()
                     .setTitle("Color")
                     .setColor('ff5959')
-                    .setDescription("<:red_check:829200653796245504> Reset the server embed color to `#ff5959`")
+                    .setDescription("<a:bongo:890307897312051221> Reset the server embed color to `#ff5959`")
                     await Guild.findOneAndUpdate({
                         guildID: message.guild.id
                     }, {
@@ -39,7 +46,7 @@ module.exports = {
                 const color = new MessageEmbed()
                     .setTitle("Color")
                     .setColor(outcome)
-                    .setDescription(`<:green_check:826893895504887828> Your server embed color has been changed to \`#${outcome}\``)
+                    .setDescription(`<a:bongo:890307897312051221> Your server embed color has been changed to \`#${outcome}\``)
                 message.channel.send({ embeds: [color] });
             }
         }
