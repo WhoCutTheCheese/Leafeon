@@ -1,6 +1,9 @@
-const { Client, Intents, Collection } = require('discord.js');
+const { Client, Intents, Collection, Interaction, Permissions } = require('discord.js');
 const fs = require('fs');
 const mongoose = require("mongoose");
+const Guild = require('./models/guild');
+const Tokens = require('./models/tokens');
+const Logs = require('./models/logs');
 const client = new Client({
     intents:
         [
@@ -13,7 +16,7 @@ const client = new Client({
             Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
         ]
 });
-const prefix = "."
+client.mongoose = require('./utils/mongoose.js')
 client.commands = new Collection();
 const commandFiles = fs.readdirSync('./commands/').filter(file => file.endsWith('.js'));
 for (const file of commandFiles) {
@@ -23,41 +26,82 @@ for (const file of commandFiles) {
 }
 client.on('ready', async () => {
     client.user.setStatus('dnd')
-    client.user.setActivity('Vaporeon coding me :D', {
+    client.user.setActivity('!!help | Are fish?', {
         type: "STREAMING",
         url: "https://twitter.com/EveningVaporeon"
     })
-    console.log("Leafeon is starting...")
+    console.log("Grahmaham is starting...")
 
     setTimeout(function () {
-        console.log("Leafeon has started!")
+        console.log("Grahmaham has started!")
     }, 5000);
 })
-const dbOptions = {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-};
-mongoose.connect("mongodb+srv://Zironic_Dev:CheeseCake101@cluster0.3ud4r.mongodb.net/myFirstDatabase?retryWrites=true&w=majority", dbOptions);
-mongoose.Promise = global.Promise;
-mongoose.connection.on('connected', () => {
-    setTimeout(function () {
-        console.log('Mongoose has successfully connected!');
-    }, 100);
-});
-mongoose.connection.on('err', err => {
-    console.error(`Mongoose connection error: \n${err.stack}`);
-});
-mongoose.connection.on('disconnected', () => {
-    console.warn('Mongoose connection lost');
-});
+client.on("interactionCreate", async (Interaction) => {
+    if (Interaction.isButton()) {
+    }
+})
+
+
+client.on('guildCreate', async guild => {
+    const newGuild = new Guild({
+        guildID: guild.id,
+        guildName: guild.name,
+        prefix: "!!",
+        color: "ff5959",
+    })
+    newGuild.save().catch(err => console.log(err));
+})
+
+client.on('guildDelete', async guild => {
+    await Guild.findOneAndRemove({
+        guildID: guild.id
+    })
+})
+
 client.on('messageCreate', async message => {
-    if (!message.content.startsWith(prefix)) return;
+    const guilds = Guild.findOne({
+        guildID: message.guild.id,
+    }, (err, guild) => {
+        if (err) console.error(err)
+        if (!guild) {
+            const newGuild = new Guild({
+                _id: mongoose.Types.ObjectId(),
+                guildID: message.guild.id,
+                guildName: message.guild.name,
+                prefix: "!!",
+                color: `ff5959`,
+            });
+            newGuild.save()
+                .then(result => message.channel.send({ content: "Whoops, looks like you dont have a database file, we're making one!" }))
+                .catch(err => console.error(err))
+        };
+    });
+});
+
+client.on('messageCreate', async message => {
+    const server = await Guild.findOne({
+        guildID: message.guild.id
+    })
+    if(!server) { return; } 
+    const prefix = `${server.prefix}`
+    if (!message.content.startsWith(prefix)) { return; }
+    if (!message.guild.me.permissions.has(Permissions.FLAGS.ADMINISTRATOR)) {
+        if (!message.guild.me.permissions.has(Permissions.FLAGS.SEND_MESSAGES)) { return; }
+        if (!message.guild.me.permissions.has(Permissions.FLAGS.EMBED_LINKS)) { return; }
+        if (!message.channel.permissionsFor(message.guild.me).has(Permissions.FLAGS.SEND_MESSAGES)) { return; }
+        if (!message.channel.permissionsFor(message.guild.me).has(Permissions.FLAGS.EMBED_LINKS)) { return; }
+
+    }
     let args = message.content.substring(prefix.length).split(" ");
     switch (args[0]) {
         case "ping":
             client.commands.get('ping').run(client, message, args);
             break
+        case "prefix":
+            client.commands.get('prefix').run(client, message, args);
+            break
     }
 })
-//client.login('ODg5Mzg4Njk3NTcxNjkyNTQ1.YUghxQ.aNTFShOR3dFT13f_ISqh43kDAKU');
-client.login(process.env.token);
+client.mongoose.init();
+client.login('ODkwMDI1MTM2MjA2NTQ0OTM2.YUpygA.3G6LjLfp6EkpvTcIO0n0m9QKem4');
+//client.login(process.env.token);
