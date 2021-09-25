@@ -1,18 +1,13 @@
 const { MessageEmbed, Permissions, DiscordAPIError } = require('discord.js');
 const Guild = require('../models/guild');
-const Tokens = require('../models/tokens');
 module.exports = {
     name: "color",
     description: "Sets server embed colors.",
-    run: async (bot, message, args) => {
+    run: async (client, message, args) => {
         if (!message.member.permissions.has(Permissions.FLAGS.MANAGE_GUILD)) return message.channel.send({ content: "You do not have permission to use this command." });
         const gSettings = await Guild.findOne({
             guildID: message.guild.id
         });
-        const tSettings = await Tokens.findOne({
-            guildID: message.guild.id
-        });
-        if (!gSettings) return;
         const premiumReq = new MessageEmbed()
             .setTitle("Color")
             .setColor("GOLD")
@@ -20,8 +15,8 @@ module.exports = {
             .addField("Color Sub Commands:", "`color [reset/hex]`")
             .addField("Aliases:", "`c, setcolor`")
             .setFooter("THIS IS A PREMIUM COMMAND", `${message.author.avatarURL()}`)
-        if (!tSettings) return message.channel.send({ embeds: [premiumReq] });
-        if(tSettings.guildID === message.guild.id) {
+        if (gSettings.premium == false) return message.channel.send({ embeds: [premiumReq] });
+        if(gSettings.premium == true) {
             if(args[1] === 'reset') {
                 const reset = new MessageEmbed()
                     .setTitle("Color")

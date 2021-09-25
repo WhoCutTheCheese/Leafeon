@@ -26,8 +26,8 @@ for (const file of commandFiles) {
 }
 client.on('ready', async () => {
     client.user.setStatus('dnd')
-    client.user.setActivity('!!help | Are fish?', {
-        type: "STREAMING",
+    client.user.setActivity('you 👀 | !!help', {
+        type: "WATCHING",
         url: "https://twitter.com/EveningVaporeon"
     })
     console.log("Grahmaham is starting...")
@@ -48,6 +48,8 @@ client.on('guildCreate', async guild => {
         guildName: guild.name,
         prefix: "!!",
         color: "ff5959",
+        premium: false,
+        premiumHolder: "None"
     })
     newGuild.save().catch(err => console.log(err));
 })
@@ -70,6 +72,8 @@ client.on('messageCreate', async message => {
                 guildName: message.guild.name,
                 prefix: "!!",
                 color: `ff5959`,
+                premium: false,
+                premiumHolder: "None"
             });
             newGuild.save()
                 .then(result => message.channel.send({ content: "Whoops, looks like you dont have a database file, we're making one!" }))
@@ -110,6 +114,19 @@ client.on('messageCreate', async message => {
             break
         case "premium":
             client.commands.get('premium').run(client, message, args);
+            break
+        case "serverinfo":
+        case "sinfo":
+        case "server-info":
+            client.commands.get('serverinfo').run(client, message, args);
+            break
+        case "userinfo":
+        case "info":
+        case "user-info":
+            client.commands.get('userinfo').run(client, message, args);
+            break
+        case "av":
+            client.commands.get('av').run(client, message, args);
             break
     }
 })

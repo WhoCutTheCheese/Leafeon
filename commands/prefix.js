@@ -3,7 +3,7 @@ const { Permissions, MessageEmbed } = require('discord.js')
 module.exports = {
     name: 'prefix',
     description: "Set your server's prefix.",
-    run: async (bot, message, args) => {
+    run: async (client, message, args) => {
         if (!message.member.permissions.has(Permissions.FLAGS.MANAGE_GUILD)) { return message.channel.send({ content: "You are unable to use this command!" }) };
 
         const settings = await Guild.findOne({
