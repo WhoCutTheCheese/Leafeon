@@ -9,5 +9,9 @@ let Schema = new mongoose.Schema({
     modChannel: String,
     bypassRole: String,
     bypassUser: String,
+    bypassChannel: String,
+    channelCreateLog: Boolean,
+    channelDeleteLog: Boolean,
+
 })
 module.exports = mongoose.model("logs", Schema)

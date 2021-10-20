@@ -55,9 +55,28 @@ client.on('guildCreate', async guild => {
 })
 
 client.on('guildDelete', async guild => {
-    await Guild.findOneAndRemove({
-        guildID: guild.id
+    const guildS = await Guild.findOne({
+        guildID: guild.id,
     })
+    if (guildS.premium == true) {
+        const tokens = await Tokens.findOne({
+            userID: guildS.premiumHolder
+        })
+        await Tokens.findOneAndUpdate({
+            userID: guildS.premiumHolder
+        }, {
+            tokens: tokens.tokens + 1
+        })
+        setTimeout(async function () {
+            await Guild.findOneAndRemove({
+                guildID: guild.id
+            })
+        }, 1000);
+    } else if (guildS.premium == false) {
+        await Guild.findOneAndRemove({
+            guildID: guild.id
+        })
+    }
 })
 
 client.on('messageCreate', async message => {
@@ -80,13 +99,35 @@ client.on('messageCreate', async message => {
                 .catch(err => console.error(err))
         };
     });
+    const logSettings = Logs.findOne({
+        guildID: message.guild.id
+    }, (err, logs) => {
+        if (err) console.error(err)
+        if (!logs) {
+            const newLogs = new Logs({
+                guildID: message.guild.id,
+                guildName: message.guild.name,
+                msgChannel: "None",
+                channelLog: "None",
+                roleChannel: "None",
+                modChannel: "None",
+                bypassRole: "None",
+                bypassUser: "None",
+                bypassChannel: "None",
+                channelCreateLog: true,
+                channelDeleteLog: true,
+            });
+            newLogs.save()
+                .catch(err => console.error(err))
+        }
+    })
 });
-
+const usedCommandRecently = new Set()
 client.on('messageCreate', async message => {
     const server = await Guild.findOne({
         guildID: message.guild.id
     })
-    if(!server) { return; } 
+    if (!server) { return; }
     const prefix = `${server.prefix}`
     if (!message.content.startsWith(prefix)) { return; }
     if (!message.guild.me.permissions.has(Permissions.FLAGS.ADMINISTRATOR)) {
@@ -128,8 +169,38 @@ client.on('messageCreate', async message => {
         case "av":
             client.commands.get('av').run(client, message, args);
             break
+        case "help":
+            if (usedCommandRecently.has(message.author.id)) {
+                message.channel.send({ content: "You're on cooldown!" })
+            } else {
+                client.commands.get('help').run(client, message, args);
+                usedCommandRecently.add(message.author.id);
+                setTimeout(() => {
+                    usedCommandRecently.delete(message.author.id)
+                }, 5000)
+            }
+            break
+        case "test":
+            client.commands.get('test').run(client, message, args);
+            break
+        case "settings":
+            client.commands.get('settings').run(client, message, args);
+            break
+        case "check":
+            client.commands.get('check').run(client, message, args);
+            break
+        case "botinfo":
+        case "bot":
+            client.commands.get('botinfo').run(client, message, args);
+            break
     }
+    client.on('interactionCreate', async (interaction) => {
+        if (interaction.isButton()) {
+        }
+    })
 })
+require("./logging/createChannel")(client);
+require('./logging/channelDelete')(client);
 client.mongoose.init();
 client.login('ODkwMDI1MTM2MjA2NTQ0OTM2.YUpygA.3G6LjLfp6EkpvTcIO0n0m9QKem4');
 //client.login(process.env.token);

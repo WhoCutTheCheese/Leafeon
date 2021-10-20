@@ -1,8 +1,11 @@
-const Discord = require('discord.js');
+const { Client, Message, MessageActionRow, MessageButton, MessageEmbed, ButtonInteraction, Interaction } = require('discord.js');
 module.exports = {
     name: 'ping',
     description: 'Pong.',
     run: async (client, message, args) => {
-        message.reply({ content: "<a:lookinforwhoasked:853014801609261086> Pong!" })
+        const pingMessage = await message.channel.send({ content: "<a:loading:899452664008552478> Calculating..." }).then(resultMessage => {
+            const ping = resultMessage.createdTimestamp - message.createdTimestamp
+            resultMessage.edit({ content: `<:greencheck:893615789251395584> Bot Latency: **${ping}ms**, API Latency: **${client.ws.ping}ms**` })
+        })
     }
 }

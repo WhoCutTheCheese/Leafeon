@@ -1,10 +1,17 @@
 const { MessageEmbed, Permissions, DiscordAPIError } = require('discord.js');
 const Guild = require('../models/guild');
+// regular function
+function isHexColor (hex) {
+    return typeof hex === 'string'
+        && hex.length === 6
+        && !isNaN(Number('0x' + hex))
+  }
+  isHexColor = hex => typeof hex === 'string' && hex.length === 6 && !isNaN(Number('0x' + hex))
 module.exports = {
     name: "color",
     description: "Sets server embed colors.",
     run: async (client, message, args) => {
-        if (!message.member.permissions.has(Permissions.FLAGS.MANAGE_GUILD)) return message.channel.send({ content: "You do not have permission to use this command." });
+        if (!message.member.permissions.has(Permissions.FLAGS.MANAGE_GUILD)) return message.channel.send({ content: "Invalid Permissions: You need `MANAGE_GUILD` to use this command." })
         const gSettings = await Guild.findOne({
             guildID: message.guild.id
         });
@@ -31,18 +38,19 @@ module.exports = {
             } else if (args[1] !== "reset") {
                 if (!args[1]) return message.channel.send({ content: "You need to supply a hex code." });
                 if (!args[1].length >= 7) return message.channel.send({ content: "That is not a valid hex code." });
-                if(!args[1].startsWith("#")) return message.channel.send({ content: "That is not a valid hex code." });
-                const outcome = args[1].replace('#', '').toUpperCase();
+                let testingcolor = args[1].replace('#', '').toUpperCase();
+                console.log(testingcolor)
+                if(isHexColor(testingcolor) == false) return message.channel.send('This is not a valid hex code.')
                 await Guild.findOneAndUpdate({
                     guildID: message.guild.id
                 }, {
-                    color: outcome
+                    color: testingcolor
                 })
                 const color = new MessageEmbed()
                     .setTitle("Color")
-                    .setColor(outcome)
-                    .setDescription(`<a:bongo:890307897312051221> Your server embed color has been changed to \`#${outcome}\``)
-                message.channel.send({ embeds: [color] });
+                    .setColor(testingcolor)
+                    .setDescription(`<a:bongo:890307897312051221> Your server embed color has been changed to \`#${testingcolor}\``)
+                message.channel.send({ embeds: [color] })
             }
         }
     }

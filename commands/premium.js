@@ -15,14 +15,13 @@ module.exports = {
         if (args[1] === "redeem") {
             if (hasToken.tokens === 0) return message.channel.send({ content: "You do not have a premium token to use." })
             if (guildSettings.premium === true) return message.channel.send({ content: "This guild already has premium!" })
-            console.log('a')
             const premiumEnabled = new Discord.MessageEmbed()
                 .setTitle("Premium")
                 .setColor("GOLD")
-                .setDescription(`<a:bongo:890307897312051221> Premium has been enabled for **${message.guild.name}**`)
+                .setDescription(`<:discovery:899895834500554752> Premium has been enabled for **${message.guild.name}**`)
                 .setFooter(`${message.author.tag} - ${message.guild.name}`)
             message.channel.send({ embeds: [premiumEnabled] })
-            console.log(`Premium has been enabled for ${message.guild.name} (${message.guild.id}). If this was unauthorized please revoke it forcefully.`)
+            console.log(`Premium has been enabled for ${message.guild.name} (${message.guild.id}) by ${message.author.tag} (${message.author.id}). If this was unauthorized please revoke it forcefully.`)
             const math = hasToken.tokens - 1;
             const updateGuild = await Guild.findOneAndUpdate({
                 guildID: message.guild.id
@@ -44,10 +43,10 @@ module.exports = {
             const disabledPremium = new Discord.MessageEmbed()
                 .setTitle("Premium")
                 .setColor("RED")
-                .setDescription(`<a:bongo:890307897312051221> Premium was disabled on **${message.guild.name}** and \`1\` premium token has been added to your balence`)
+                .setDescription(`<:discovery:899895834500554752> Premium was disabled on **${message.guild.name}** and \`1\` premium token has been added to your balence`)
                 .setFooter(`${message.author.tag} - ${message.guild.name}`)
             message.channel.send({ embeds: [disabledPremium] })
-            console.log(`Premium was disabled on ${message.guild.name} (${message.guild.id}) by ${message.author.tag}`)
+            console.log(`Premium was disabled on ${message.guild.name} (${message.guild.id}) by ${message.author.tag} (${message.author.id})`)
             const math2 = hasToken.tokens + 1
             const revokePrem = await Guild.findOneAndUpdate({
                 guildID: message.guild.id,
