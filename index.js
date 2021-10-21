@@ -1,9 +1,12 @@
 const { Client, Intents, Collection, Interaction, Permissions } = require('discord.js');
 const fs = require('fs');
+const path = require("path");
 const mongoose = require("mongoose");
 const Guild = require('./models/guild');
 const Tokens = require('./models/tokens');
 const Logs = require('./models/logs');
+const bot = require('./package.json');
+const config = require("./config.json")
 const client = new Client({
     intents:
         [
@@ -17,13 +20,6 @@ const client = new Client({
         ]
 });
 client.mongoose = require('./utils/mongoose.js')
-client.commands = new Collection();
-const commandFiles = fs.readdirSync('./commands/').filter(file => file.endsWith('.js'));
-for (const file of commandFiles) {
-    const command = require(`./commands/${file}`);
-
-    client.commands.set(command.name, command);
-}
 client.on('ready', async () => {
     client.user.setStatus('dnd')
     client.user.setActivity('you 👀 | !!help', {
@@ -35,11 +31,26 @@ client.on('ready', async () => {
     setTimeout(function () {
         console.log("Grahmaham has started!")
     }, 5000);
+    const baseFile = 'command_base.js'
+    const commandBase = require(`./commands/${baseFile}`)
+  
+    const readCommands = (dir) => {
+        const files = fs.readdirSync(path.join(__dirname, dir))
+        for (const file of files) {
+          const stat = fs.lstatSync(path.join(__dirname, dir, file))
+          if (stat.isDirectory()) {
+            readCommands(path.join(dir, file))
+          } else if (file !== baseFile) {
+            const option = require(path.join(__dirname, dir, file))
+            commandBase(option)
+          }
+        }
+      }
+    
+      readCommands('commands')
+      commandBase.listen(client);
 })
-client.on("interactionCreate", async (Interaction) => {
-    if (Interaction.isButton()) {
-    }
-})
+
 
 
 client.on('guildCreate', async guild => {
@@ -122,85 +133,8 @@ client.on('messageCreate', async message => {
         }
     })
 });
-const usedCommandRecently = new Set()
-client.on('messageCreate', async message => {
-    const server = await Guild.findOne({
-        guildID: message.guild.id
-    })
-    if (!server) { return; }
-    const prefix = `${server.prefix}`
-    if (!message.content.startsWith(prefix)) { return; }
-    if (!message.guild.me.permissions.has(Permissions.FLAGS.ADMINISTRATOR)) {
-        if (!message.guild.me.permissions.has(Permissions.FLAGS.SEND_MESSAGES)) { return; }
-        if (!message.guild.me.permissions.has(Permissions.FLAGS.EMBED_LINKS)) { return; }
-        if (!message.channel.permissionsFor(message.guild.me).has(Permissions.FLAGS.SEND_MESSAGES)) { return; }
-        if (!message.channel.permissionsFor(message.guild.me).has(Permissions.FLAGS.EMBED_LINKS)) { return; }
-
-    }
-    let args = message.content.substring(prefix.length).split(" ");
-    switch (args[0]) {
-        case "ping":
-            client.commands.get('ping').run(client, message, args);
-            break
-        case "prefix":
-            client.commands.get('prefix').run(client, message, args);
-            break
-        case "color":
-        case "setcolor":
-        case "c":
-            client.commands.get('color').run(client, message, args);
-            break
-        case "givepremium":
-            client.commands.get('givepremium').run(client, message, args);
-            break
-        case "premium":
-            client.commands.get('premium').run(client, message, args);
-            break
-        case "serverinfo":
-        case "sinfo":
-        case "server-info":
-            client.commands.get('serverinfo').run(client, message, args);
-            break
-        case "userinfo":
-        case "info":
-        case "user-info":
-            client.commands.get('userinfo').run(client, message, args);
-            break
-        case "av":
-            client.commands.get('av').run(client, message, args);
-            break
-        case "help":
-            if (usedCommandRecently.has(message.author.id)) {
-                message.channel.send({ content: "You're on cooldown!" })
-            } else {
-                client.commands.get('help').run(client, message, args);
-                usedCommandRecently.add(message.author.id);
-                setTimeout(() => {
-                    usedCommandRecently.delete(message.author.id)
-                }, 5000)
-            }
-            break
-        case "test":
-            client.commands.get('test').run(client, message, args);
-            break
-        case "settings":
-            client.commands.get('settings').run(client, message, args);
-            break
-        case "check":
-            client.commands.get('check').run(client, message, args);
-            break
-        case "botinfo":
-        case "bot":
-            client.commands.get('botinfo').run(client, message, args);
-            break
-    }
-    client.on('interactionCreate', async (interaction) => {
-        if (interaction.isButton()) {
-        }
-    })
-})
 require("./logging/createChannel")(client);
 require('./logging/channelDelete')(client);
 client.mongoose.init();
-client.login('ODkwMDI1MTM2MjA2NTQ0OTM2.YUpygA.3G6LjLfp6EkpvTcIO0n0m9QKem4');
+client.login(config.token);
 //client.login(process.env.token);

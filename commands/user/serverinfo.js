@@ -1,8 +1,10 @@
 const Discord = require('discord.js');
-const Guild = require("../models/guild");
+const Guild = require("../../models/guild");
 module.exports = {
-    name: "serverinfo",
-    run: async (client, message, args) => {
+    commands: ['serverinfo', 'sinfo', 'server-info'],
+    minArgs: 0,
+    maxArgs: 0,
+    callback: async (client, bot, message, args, text) => {
         const gSettings = await Guild.findOne({
             guildID: message.guild.id
         })
@@ -21,22 +23,6 @@ module.exports = {
             if (message.guild.verificationLevel == "MEDIUM") { verifLevel = "Medium" }
             if (message.guild.verificationLevel == "HIGH") { verifLevel =  "(╯°□°）╯︵  ┻━┻" }
             if (message.guild.verificationLevel == "VERY_HIGH") { verifLevel =  "┻━┻ミヽ(ಠ益ಠ)ノ彡┻━┻" }
-            let region = {
-                "eu-central": ":flag_eu: Central Europe",
-                "singapore": ":flag_sg: Singapore",
-                "us-central": ":flag_us: U.S. Central",
-                "sydney": ":flag_au: Sydney",
-                "us-east": ":flag_us: U.S. East",
-                "us-south": ":flag_us: U.S. South",
-                "us-west": ":flag_us: U.S. West",
-                "eu-west": ":flag_eu: Western Europe",
-                "vip-us-east": ":flag_us: VIP U.S. East",
-                "london": ":flag_gb: London",
-                "amsterdam": ":flag_nl: Amsterdam",
-                "hongkong": ":flag_hk: Hong Kong",
-                "russia": ":flag_ru: Russia",
-                "southafrica": ":flag_za:  South Africa"
-            };
             const botCount = message.guild.members.cache.filter((member) => !member.user.bot).size;
             const serverinfo = new Discord.MessageEmbed()
                 .setAuthor(message.guild.name, message.guild.iconURL({dynamic : true}))

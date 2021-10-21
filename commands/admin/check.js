@@ -1,10 +1,11 @@
 const { Client, Intents, Collection, Interaction, Permissions, MessageEmbed } = require('discord.js');
-const Guild = require("../models/guild");
+const Guild = require("../../models/guild");
 module.exports = {
-    name: 'check',
-    description: 'Pong.',
-    run: async (client, message, args) => {
-        if(!message.member.permissions.has(Permissions.FLAGS.MANAGE_GUILD)) { return message.reply({ content: "You require `MANAGE_GUILD` to execute this command!" }) }
+    commands: ['check', 'perms', 'permissions'],
+    minArgs: 0,
+    maxArgs: 0,
+    permissionError: "You require `MANAGE_GUILD` to execute this command.",
+    callback: async (client, bot, message, args, text) => {
         const guildSettings = await Guild.findOne({
             guildID: message.guild.id,
         })
@@ -46,5 +47,6 @@ module.exports = {
             message.channel.send({ embeds: [checkEmbed] }).catch((err) => {
             console.error(err)
         }) 
-    }
+    },
+    userPermissions: [ 'MANAGE_GUILD' ]
 }

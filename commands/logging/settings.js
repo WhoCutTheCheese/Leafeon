@@ -1,11 +1,13 @@
 try {
     const { Client, Message, Permissions, MessageActionRow, MessageButton, MessageEmbed, ButtonInteraction, Interaction, MessageReaction, GuildAuditLogsEntry } = require('discord.js');
-    const Guild = require('../models/guild');
-    const Logs = require('../models/logs');
+    const Guild = require('../../models/guild');
+    const Logs = require('../../models/logs');
     module.exports = {
-        name: 'settings',
-        description: 'Pong.',
-        run: async (client, message, args) => {
+        commands: ['settings', 's'],
+        minArgs: 0,
+        maxArgs: 0,
+        permissionError: "You require `MANAGE_GUILD` to execute this command.",
+        callback: async (client, bot, message, args, text) => {
             if (!message.member.permissions.has(Permissions.FLAGS.MANAGE_GUILD)) return message.channel.send({ content: "Invalid Permissions: You need `MANAGE_GUILD` to use this command." });
             const guildSettings = await Guild.findOne({
                 guildID: message.guild.id,
@@ -15,9 +17,9 @@ try {
             })
             if (!args[1]) {
                 const settingsEmbed = new MessageEmbed()
-                    .setTitle("<:settings:899465272862330940> Logging Settings")
+                    .setTitle("<:settings:899827411217158194> Logging Settings")
                     .setColor(guildSettings.color)
-                    .setDescription("Displaying current guild Logging Settings\nTo edit these settings run `!!help settings`\nFor more information on each settings, run `!!settings info`")
+                    .setDescription("Displaying current guild Logging Settings\nFor more information on each settings, run `!!settings info`")
                     .setFooter(`Requested by ${message.author.tag}`, message.author.avatarURL({ dynamic: true }))
                     if (logSettings.modChannel == "None") {
                         settingsEmbed.addField("**__Mod Logging Channel__**", `None`, true)
@@ -68,7 +70,8 @@ try {
                     console.error(err)
                 })
             }
-        }
+        },
+        userPermissions: ["MANAGE_GUILD"]
     }
 } catch (err) {
     console.error(err)

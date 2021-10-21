@@ -1,6 +1,6 @@
 {
   "name": "leafeon",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Utilities for Vaporeon's Studio",
   "main": "index.js",
   "scripts": {

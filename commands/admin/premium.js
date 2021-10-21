@@ -1,18 +1,20 @@
 const Discord = require('discord.js');
-const Tokens = require('../models/tokens');
-const Guild = require("../models/guild");
+const Tokens = require('../../models/tokens');
+const Guild = require("../../models/guild");
 const mongoose = require('mongoose');
 module.exports = {
-    name: "premium",
-    description: "Enable premium commands for your server.",
-    run: async (client, message, args) => {
+    commands: ["premium"],
+    minArgs: 1,
+    maxArgs: 1,
+    expectedArgs: "<Redeem/Revoke/Check/Status/Bal/Balence>",
+    callback: async (client, bot, message, args, text) => {
         const hasToken = await Tokens.findOne({
             userID: message.author.id,
         })
         const guildSettings = await Guild.findOne({
             guildID: message.guild.id,
         })
-        if (args[1] === "redeem") {
+        if (args[0] === "redeem") {
             if (hasToken.tokens === 0) return message.channel.send({ content: "You do not have a premium token to use." })
             if (guildSettings.premium === true) return message.channel.send({ content: "This guild already has premium!" })
             const premiumEnabled = new Discord.MessageEmbed()
@@ -36,7 +38,7 @@ module.exports = {
                 userName: message.author.tag,
                 tokens: math
             })
-        } else if (args[1] === "revoke") {
+        } else if (args[0] === "revoke") {
             if (guildSettings.premium === false) return message.channel.send({ content: "This server does not have premium enabled. Or you were not the one who enabled premium." })
             if (guildSettings.premiumHolder !== message.author.id) return message.channel.send({ content: "You cannot revoke another user's premium!" })
 
@@ -65,7 +67,7 @@ module.exports = {
                 color: "ff5959"
             })
 
-        } else if (!args[1]) {
+        } else if (!args[0]) {
             const premium = new Discord.MessageEmbed()
                 .setTitle("Premium")
                 .setColor("GOLD")
@@ -73,7 +75,7 @@ module.exports = {
                 .addField("Premium Sub Commands", `\`${guildSettings.prefix}premium [Redeem/Revoke/Check/Status/Bal/Balence]\``)
                 .setFooter(`${message.author.tag} - ${message.guild.name}`)
             return message.channel.send({ embeds: [premium] })
-        } else if (args[1] === "check") {
+        } else if (args[0] === "check") {
             if (guildSettings.premiumHolder !== message.author.id) {
                 if (guildSettings.premium == true) {
                     const yesPremiumNotHolder = new Discord.MessageEmbed()
@@ -118,7 +120,7 @@ module.exports = {
             if (hasToken.tokens == 0) return message.channel.send({ embeds: [noTokens] });
             if (guildSettings.premium == true) return message.channel.send({ embeds: [yesPremium] });
             if (hasToken.tokens > 0) return message.channel.send({ embeds: [yesTokens] })
-        } else if (args[1] === "bal") {
+        } else if (args[0] === "bal") {
             if (!hasToken) {
                 const noTokensNoFile = new Discord.MessageEmbed()
                     .setTitle("Premium Balence")

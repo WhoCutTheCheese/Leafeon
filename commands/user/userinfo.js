@@ -1,16 +1,18 @@
 const { MessageEmbed, Permissions, Client } = require('discord.js');
-const Guild = require('../models/guild');
+const Guild = require('../../models/guild');
 const moment = require('moment');
 module.exports = {
-	name: "userinfo",
-	description: "Pain",
-	run: async (client, message, args) => {
+	commands: ['userinfo', 'uinfo', 'user-info'],
+	minArgs: 0,
+	maxArgs: 1,
+	expectedArgs: ["<@user/user ID>"],
+    callback: async (client, bot, message, args, text) => {
 		const gSettings = await Guild.findOne({
 			guildID: message.guild.id
 		})
-		let user = message.mentions.members.first() || message.guild.members.cache.get(args[1]);
+		let user = message.mentions.members.first() || message.guild.members.cache.get(args[0]);
 
-		if (!args[1]) {
+		if (!args[0]) {
 			const userInfoAuthor = new MessageEmbed()
 				.setAuthor(`${message.author.username}`, message.author.avatarURL({ dynamic: true }))
 				.setThumbnail(message.author.displayAvatarURL({ dynamic: true }))
