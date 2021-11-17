@@ -21,6 +21,7 @@ module.exports = async (client) => {
                 console.error(err)
                 console.log("There was an error with the module: logging/createChannel.js!")
             });
+
             if (!channel.guild.me.permissions.has(Permissions.FLAGS.ADMINISTRATOR)) {
                 if (!channel.guild.me.permissions.has(Permissions.FLAGS.SEND_MESSAGES)) { return; }
                 if (!channel.guild.me.permissions.has(Permissions.FLAGS.EMBED_LINKS)) { return; }
@@ -32,9 +33,16 @@ module.exports = async (client) => {
                 type: "CHANNEL_CREATE"
             });
             const Entry = AuditLogFetch.entries.first();
-            if (logs.bypassUser !== Entry.executor.id) {
-                send_log(client, channel.guild.id, "Channel Created", `A channel has been created.\n\n**Channel Name:** <#${channel.id}>\n**Executor:** **\`${Entry.executor.tag}\`**\n**Executor ID: \`${Entry.executor.id}\`**`, Entry.executor.displayAvatarURL({dynamic: true }), channel.guild.iconURL({ dynamic: true }))
+            if (logs.showUser == false) {
+                if (logs.bypassUser !== Entry.executor.id) {
+                    send_log(client, channel.guild.id, "Channel Created", `A channel has been created.\n\n**Channel Name:** <#${channel.id}>\n**Executor:** **\`Hidden\`**\n**Executor ID: \`Hidden\`**`, Entry.executor.displayAvatarURL({dynamic: true }), channel.guild.iconURL({ dynamic: true }))
+                }
+            } else if (logs.showUser == true) {
+                if (logs.bypassUser !== Entry.executor.id) {
+                    send_log(client, channel.guild.id, "Channel Created", `A channel has been created.\n\n**Channel Name:** <#${channel.id}>\n**Executor:** **\`${Entry.executor.tag}\`**\n**Executor ID: \`${Entry.executor.id}\`**`, Entry.executor.displayAvatarURL({dynamic: true }), channel.guild.iconURL({ dynamic: true }))
+                }
             }
+
 
         })
     } catch (err) {
@@ -51,7 +59,6 @@ async function send_log(client, guildid, title, description, avatar, guildicon) 
         const logs = await Logs.findOne({
             guildID: guildid
         })
-
         const log = new MessageEmbed()
             .setAuthor(title ? title.substr(0, 256) : "\u200b", guildicon)
             .setThumbnail(avatar)

@@ -127,6 +127,7 @@ client.on('messageCreate', async message => {
                 bypassChannel: "None",
                 channelCreateLog: true,
                 channelDeleteLog: true,
+                showUser: true,
             });
             newLogs.save()
                 .catch(err => console.error(err))

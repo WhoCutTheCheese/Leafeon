@@ -32,10 +32,18 @@ module.exports = async (client) => {
                 type: "CHANNEL_CREATE"
             });
             const Entry = AuditLogFetch.entries.first();
-            if (logs.bypassUser !== Entry.executor.id) {
-                send_log(client, channel.guild.id, "Channel Deleted", `A channel has been deleted.\n\n**Channel Name:** #${channel.name}\n**Executor:** **\`${Entry.executor.tag}\`**\n**Executor ID: \`${Entry.executor.id}\`**`, Entry.executor.displayAvatarURL({
-                    dynamic: true
-                }), channel.guild.iconURL({ dynamic: true }))
+            if (logs.showUser == false) {
+                if (logs.bypassUser !== Entry.executor.id) {
+                    send_log(client, channel.guild.id, "Channel Deleted", `A channel has been deleted.\n\n**Channel Name:** #${channel.name}\n**Executor:** **\`Hidden\`**\n**Executor ID: \`Hidden\`**`, Entry.executor.displayAvatarURL({
+                        dynamic: true
+                    }), channel.guild.iconURL({ dynamic: true }))
+                }
+            } else if (logs.showUser == true) {
+                if (logs.bypassUser !== Entry.executor.id) {
+                    send_log(client, channel.guild.id, "Channel Deleted", `A channel has been deleted.\n\n**Channel Name:** #${channel.name}\n**Executor:** **\`${Entry.executor.tag}\`**\n**Executor ID: \`${Entry.executor.id}\`**`, Entry.executor.displayAvatarURL({
+                        dynamic: true
+                    }), channel.guild.iconURL({ dynamic: true }))
+                }
             }
 
         })

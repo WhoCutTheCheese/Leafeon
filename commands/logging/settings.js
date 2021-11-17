@@ -66,6 +66,11 @@ try {
                     } else if (logSettings.channelDeleteLog == false) {
                         settingsEmbed.addField("**__Deleted Channel Logging__**", `false`, true)
                     }
+                    if (logSettings.showUser == true) {
+                        settingsEmbed.addField("**__Display Log User__**", `true`, true)
+                    } else if (logSettings.showUser == false) {
+                        settingsEmbed.addField("**__Display Log User__**", `false`, true)
+                    }
                 message.channel.send({ embeds: [settingsEmbed] }).catch((err) => {
                     console.error(err)
                 })
