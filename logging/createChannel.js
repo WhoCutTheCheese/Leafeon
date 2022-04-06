@@ -35,11 +35,11 @@ module.exports = async (client) => {
             const Entry = AuditLogFetch.entries.first();
             if (logs.showUser == false) {
                 if (logs.bypassUser !== Entry.executor.id) {
-                    send_log(client, channel.guild.id, "Channel Created", `A channel has been created.\n\n**Channel Name:** <#${channel.id}>\n**Executor:** **\`Hidden\`**\n**Executor ID: \`Hidden\`**`, Entry.executor.displayAvatarURL({dynamic: true }), channel.guild.iconURL({ dynamic: true }))
+                    send_log(client, channel.guild.id, "Channel Created", `A channel has been created.\n\n**Channel Name:** <#${channel.id}>\n**Executor:** **\`Hidden\`**\n**Executor ID: \`Hidden\`**`, Entry.executor.displayAvatarURL({dynamic: true }), "https://i.imgur.com/VtMwGbR.png")
                 }
             } else if (logs.showUser == true) {
                 if (logs.bypassUser !== Entry.executor.id) {
-                    send_log(client, channel.guild.id, "Channel Created", `A channel has been created.\n\n**Channel Name:** <#${channel.id}>\n**Executor:** **\`${Entry.executor.tag}\`**\n**Executor ID: \`${Entry.executor.id}\`**`, Entry.executor.displayAvatarURL({dynamic: true }), channel.guild.iconURL({ dynamic: true }))
+                    send_log(client, channel.guild.id, "Channel Created", `A channel has been created.\n\n**Channel Name:** <#${channel.id}>\n**Executor:** **\`${Entry.executor.tag}\`**\n**Executor ID: \`${Entry.executor.id}\`**`, Entry.executor.displayAvatarURL({dynamic: true }), "https://i.imgur.com/VtMwGbR.png")
                 }
             }
 
